@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ESC/POS Command</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <script src="jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header>ESC/POS Command</header>
+    <nav>
+        <a>
+            <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="40" class="statusmessage" readonly></textarea>
+        </a>
+        <a class="btn" href="/">System Configuration</a>
+    </nav>
+    <ul class="ul_1">
+        <li>
+            <h4>Quick Setting:</h4>
+        </li>
+
+        <li>
+            <a>
+                <form id="initial"> <input type="submit" value="Initial Display" class="btn"> </form>
+            </a>
+            <a>
+                <form id="clear"> <input type="submit" value="Clear Display" class="btn"> </form>
+            </a>
+            <a>
+                <form id="selftest"><button type="submit" class="btn">Self Test</button></form>
+            </a><br>
+        </li>
+        <li>
+            <h4>Font Mode Select:</h4>
+        </li>
+        <li>
+            <a>
+                <form id="setfont"> <input type="submit" value="Set KANJI Mode" class="btn"> </form>
+            </a>
+            <a>
+                <form id="setsjis"> <input type="submit" value="Shift-JIS mode" class="btn"> </form>
+            </a>
+            <a>
+                <form id="setjis"> <input type="submit" value="JIS mode" class="btn"> </form>
+            </a><br>
+        </li>
+        <li>
+            <textarea id="in_text" rows="2" cols="20">WD-5202 Graphic Display Demo</textarea>
+            <form id="inputstr">
+                <button type="submit" class="btn">Show String</button>
+            </form><br>
+        </li>
+        <li>
+            <a>
+                <form id="st_reverse">
+                    <input type="submit" id="rsv_on" value="Reverse ON" class="btn">
+                </form>
+            </a>
+        </li>
+    </ul>
+    <ul class="ul_2">
+        <li>
+            <h4>Display Setting</h4>
+        </li>
+        <li>
+            <a>
+                <form id="clear_cs_line"><button type="submit" class="btn">Clear cursor line</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="brightness">
+                    <!--select name="type_id" id="britnesss_val">
+                        <option value="4" selected>4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select-->
+                    1<input type="range" value="4" min="1" max="4" id="britnesss_val">4<br>
+                    <button type="submit" class="btn">Brigtness adj</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="blink">
+                    <!--input type="number" id="blink_val" value="0" min="0" max="255" maxlength="3"-->
+                    0<input type="range" value="0" min="0" max="10" id="blink_val">10<br>
+                    <button type="submit" class="btn">Blink rate adj</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_overwrite"><button type="submit" class="btn">Overwrite Mode</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_Vscroll"><button type="submit" class="btn">Vertical Scroll</button></form>
+            </a>
+        </li>
+        <li>
+            <a href="#st_Hscroll">
+                <form id="st_Hscroll"><button type="submit" class="btn">Horizontal Scroll</button></form>
+            </a>
+        </li>
+
+        <li>
+            <a>
+                <form id="st_time"><button type="submit" class="btn">Set Now Time</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="displaytime"><button type="submit" class="btn">Display Time</button></form>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="ul_3">
+        <li>
+            <h4>Cursor Move</h4>
+        </li>
+        <li>
+            <a>
+                <form id="cs_onoff"><input type="submit" value="Cursor ON" id="btcs_on" class="btn"></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="cs_mvXY">
+                    X:<input type="range" value="1" min="1" max="20" id="pos_x"><br> y:
+                    <input type="range" value="1" min="1" max="2" id="pos_y">
+                    <button type="submit" class="btn">Move Cursor to XY:</button>
+                </form>
+            </a>
+        </li>
+
+        <div class="mbtn-group" style="width:100%">
+            <form id="cs_mvLM"><button style="width:33.3%">|<</button></form>
+            <form id="cs_mvU"><button style="width:33.3%">^</button></form>
+            <form id="cs_mvRM"><button style="width:33.3%">>|</button> </form>
+        </div>
+        <div class="mbtn-group " style="width:100% ">
+            <form id="cs_mvL"><button style="width:50%"><</button></form>
+            <form id="cs_mvR"><button style="width:50%">></button> </form>
+        </div>
+        <div class="mbtn-group " style="width:100% ">
+            <form id="cs_mvH"><button style="width:33.3%">Home</button></form>
+            <form id="cs_mvD"><button style="width:33.3%">V</button></form>
+            <form id="cs_mvB"><button style="width:33.3%">END</button> </form>
+        </div>
+    </ul>
+
+    <ul class="ul_4">
+        <li>
+            <h4>Character Setting</h4>
+        </li>
+        <li>
+            <a>
+                <form id="st_codetable">
+                    <select name="codetable_id" id="codetable_val">
+                        <option value=0 selected>CP_437</option>
+                        <option value=1>Katakana</option>
+                        <option value=2>CP-850(Multilingual)</option>
+                        <option value=3>CP-860(Portugese)</option>
+                        <option value=4>CP-863(Canadian-French)</option>
+                        <option value=5>CP-865(Nordic)</option>
+                        <!--option value=6>Slawie</option-->
+                        <!--option value=7>Russia</!--option-->
+                        <option value=11>CP-851(Greek)</option>
+                        <option value=12>CP-853(Turkish)</option>
+                        <option value=13>CP-857(Turkish)</option>
+                        <option value=14>CP-737(Greek)</option>
+                        <option value=15>ISO8859-7(Greek)</option>
+                        <option value=16>WPC-1252(Latin1)</option>
+                        <option value=17>CP866(Cyrillic,Russian)</option>
+                        <option value=18>CP-852(Slavonic)</option>
+                        <option value=19>CP-858(Multilingual)</option>
+                        <option value=20>KU42(Thai)</option>
+                        <option value=21>TIS11(Thai)</option>
+                        <option value=22>TIS13(Thai)</option>
+                        <option value=23>TIS14(Thai)</option>
+                        <option value=24>TIS16(Thai)</option>
+                        <option value=25>TIS17(Thai)</option>
+                        <option value=26>TIS18(Thai)</option>
+                        <option value=30>TCVN3-1(Vietnamese)</option>
+                        <option value=31>TCVN3-2(Vietnamese)</option>
+                        <option value=32>CP-720(Arabic)</option>
+                        <option value=33>CP-775(Baltic)</option>
+                        <option value=34>CP-855(Cyrillic)</option>
+                        <option value=35>CP-861(Iceland)</option>
+                        <option value=36>CP-862(Hebrew)</option>
+                        <option value=37>CP-864(Arabic)</option>
+                        <option value=38>CP-869(Greek)</option>
+                        <option value=39>ISO8859-2(Central European)</option>
+                        <option value=40>ISO8859-15(Latin9)</option>
+                        <option value=41>CP-1098(Farsi)</option>
+                        <option value=42>CP-1118(Lithuanian)</option>
+                        <option value=43>CP-1119(Lithuanian)</option>
+                        <option value=44>CP-1125(Ukrainian)</option>
+                        <option value=45>WCP-1250(Central European)</option>
+                        <option value=46>WCP-1251(Cyrillic,Russian)</option>
+                        <option value=47>WCP-1253(Greek)</option>
+                        <option value=48>WCP-1254(Turkish)</option>
+                        <option value=49>WCP-1255(Hebrew)</option>
+                        <option value=50>WCP-1256(Arabic)</option>
+                        <option value=51>WCP-1257(Baltic)</option>
+                        <option value=52>WCP-1258(Vietnamese)</option>
+                        <option value=53>KZ1048(Kazakhstan)</option>
+                         
+                    </select>
+                    <button type="submit" class="btn">Set code table</button>
+                </form>
+                <form id="cpr1"><button type="submit" class="btn">80h~90h</button></form>
+                <form id="cpr2"><button type="submit" class="btn">A0h~B0h</button></form>
+                <form id="cpr3"><button type="submit" class="btn">C0h~D0h</button></form>
+                <form id="cpr4"><button type="submit" class="btn">E0h~F0h</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_charset">
+                    <select name="cahrset_id" id="charset_val">
+                        <option value=0 selected>U.S.A</option>
+                        <option value=1>France</option>
+                        <option value=2>Germany</option>
+                        <option value=3>U.K</option>
+                        <option value=4>Denmark I</option>
+                        <option value=5>Sweden</option>
+                        <option value=6>Italy</option>
+                        <option value=7>Spain I</option>
+                        <option value=8>Japan</option>
+                        <option value=9>Norway</option>
+                        <option value=10>Danmark II</option>
+                        <option value=11>Spain II</option>
+                        <option value=12>Latin America</option>
+                        <option value=13>Korea</option>
+                    </select>
+                    <button type="submit" class="btn">Set character set</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <h4>Macro Setting</h4>
+        </li>
+        <li>
+            <a>
+            <br><form id="setmacro"><input type="submit" class="btn" id="macrostage" value="Start Macro"></form><br> 
+            </a>
+        <li> 
+            <a>
+            <lable>Every Char delay Time</lable><br>
+            <form id="c_delay">
+                <select id="c_delay_id">
+                    <option value=0 >0 ms</option>
+                    <option value=10 selected>10 * 20ms</option>
+                    <option value=20>20 *20ms</option>
+                    <option value=40>40 *20ms</option>
+                </select><br>
+            </form><br>
+            <lable>Every Exec delay Time</lable>   
+            <form id="exc_delay">
+                <select id="exc_delay_id">
+                    <option value=0 >0 ms</option>
+                    <option value=10 selected>10 * 50ms</option>
+                    <option value=20>20 * 50ms</option>
+                    <option value=40>40 * 50ms</option>
+                </select><br>
+            </form><br>
+            <form id="execmacro"><input type="submit" class="btn" value = "Execute Macro"></form>
+            </a>
+        </li>   
+         
+        <!--li>
+            <a>
+                :<input type="number" id="period_val" value="32" min="32" max="255" maxlength="3">
+                <form id="displayperiod"><button type="submit" class="btn">Set Display Period</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                :<input type="number" id="comma_val" value="32" min="32" max="255" maxlength="3">
+                <form id="displaycomma"><button type="submit" class="btn">Set Display Comma</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                :<input type="number" id="semi_val" value="32" min="32" max="255" maxlength="3">
+                <form id="displaysemi"><button type="submit" class="btn">Set Display Semicolon</button></form>
+            </a>
+        </li-->
+
+    </ul>
+
+    <ul class="ul_5">
+        <li>
+            <h4>Windows Setting:</h4>
+        </li>
+        <li>
+            <a>
+                <form id="A_INFO"> <input type="submit" value="Multi-Windows" class="btn"> </form>
+            </a>
+        </li>
+        <!--li>
+            <a>
+                <form id="BASIC_WIN"> <input type="submit" value="Set base Window" class="btn"> </form>
+            </a>
+        <li-->
+        <li>
+            <a>
+                <form id="TEST_IMAGE"> <input type="submit" value="Download BitImage" class="btn"> </form>
+            </a>
+        </li>
+        <!--li>
+            <a>
+                <form id="TEST_RASTER"> <input type="submit" value="Download RasterImage" class="btn"> </form>
+            </a>
+        </li-->
+        <li>
+            <a>
+                <form id="TEST_COLIMAGE"> <input type="submit" value="Download columImage" class="btn"> </form>
+            </a>
+        </li>
+        <!--li>
+            <a>
+                <form id="TEST_STYLE"> <input type="submit" value="STYLE Demo" class="btn"> </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="TEST_LAYOUT"> <input type="submit" value="LAYOUT Demo" class="btn"> </form>
+            </a>
+        </li-->
+
+    </ul>
+
+    <ul class="ul_6">
+        <li>
+            <h4>Read Information:</h4>
+        </li>
+        <li>
+            <a>
+                <form id="rdfontcode"> <input type="submit" value="Font Code" class="btn"> </form>
+            </a>
+            <a>
+                <form id="rdboot"> <input type="submit" value="Boot Version" class="btn"> </form>
+            </a>
+            <a>
+                <form id="rdfw"> <input type="submit" value="FW Version" class="btn"> </form>
+            </a>
+            <a>
+                <form id="rdmf"> <input type="submit" value="Manufacture" class="btn"> </form>
+            </a>
+            <a>
+                <form id="rdpname"> <input type="submit" value="ModelName" class="btn"> </form>
+            </a>
+            <a>
+                <form id="rdser"> <input type="submit" value="Serial Number" class="btn"> </form>
+            </a>
+        </li>
+        <li>
+            <h4>Write Information:</h4>
+        </li>
+        <li>
+            <a>
+                <textarea id="mf_txt" rows="1" cols="20" maxlength="40"></textarea>
+                <form id="wrmf"> <input type="submit" value="Write Manufacture" class="btn"> </form>
+            </a>
+            <a>
+                <textarea id="pname_txt" rows="1" cols="20" maxlength="40"></textarea>
+                <form id="wrpname"> <input type="submit" value="Write ModelName" class="btn"> </form>
+            </a>
+            <a>
+                <textarea id="serial_txt" rows="1" cols="20" maxlength="40"></textarea>
+                <form id="wrser"> <input type="submit" value="Write SerialNumber" class="btn"> </form>
+            </a>
+        </li>
+    </ul>
+
+
+    <footer>Copyright &copy; http://www.winpos.com.tw</footer>
+</body>
+
+
+<script type="text/javascript ">
+    var reader; //GLOBAL File Reader object for demo purpose only
+    var output = " "; //placeholder for text output
+
+    $(function() {
+        var cs_status = 0;
+        var reverse_status = '0';
+
+        var macroidx=0;
+        var socket = io.connect();
+        // const socket = io('http://localhost:8081');
+        // socket.emit('NewClient');
+
+        $('#initial').submit(function(e) {
+            e.preventDefault();
+            socket.emit('INITIAL', {
+                id: socket.id
+            });
+        });
+        $('#clear').submit(function(e) {
+            e.preventDefault();
+            socket.emit('CLEAR', {
+                id: socket.id
+            });
+        });
+        $('#clear_cs_line').submit(function(e) {
+            e.preventDefault();
+            socket.emit('CLEAR_CS_LINE', {
+                id: socket.id
+            });
+        });
+        $('#cs_onoff').submit(function(e) {
+            e.preventDefault();
+            if (cs_status == 0) {
+                cs_status = 1;
+                document.getElementById("btcs_on").value = "Cursor OFF";
+                document.getElementById("btcs_on").style.background = '#700000';
+            } else {
+                cs_status = 0;
+                document.getElementById("btcs_on").value = "Cursor ON";
+                document.getElementById("btcs_on").style.background = '#308000';
+            }
+            socket.emit('CS_ONOFF', {
+                id: socket.id,
+                parm: cs_status
+            });
+        });
+
+        $('#cs_mvR').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_R', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvL').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_L', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvU').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_U', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvD').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_D', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvLM').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_LM', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvRM').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_RM', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvH').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_H', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvB').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MOVE_CS_B', {
+                id: socket.id
+            });
+        });
+        $('#cs_mvXY').submit(function(e) {
+            e.preventDefault();
+            var x_val = document.getElementById("pos_x").value;
+            var y_val = document.getElementById("pos_y").value;
+            socket.emit('MOVE_CS_XY', {
+                id: socket.id,
+                X: x_val,
+                Y: y_val
+            });
+        });
+        $('#brightness').submit(function(e) {
+            e.preventDefault();
+            // var el = document.getElementById("britnesss_val");
+            // var cs = el.options[el.selectedIndex].value;
+            var cs = document.getElementById("britnesss_val").value;
+            socket.emit('BRIGHTNESS_ADJ', {
+                id: socket.id,
+                parm: cs
+            });
+        });
+        $('#blink').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("blink_val").value;
+            socket.emit('BLINK_DISPLAY', {
+                id: socket.id,
+                parm: val
+            });
+        });
+        $('#inputstr').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("in_text").value;
+            socket.emit('INPUT_TEXT', {
+                id: socket.id,
+                parm: val
+            });
+        });
+        $('#st_time').submit(function(e) {
+            e.preventDefault();
+            var currentdate = new Date();
+            var hr = currentdate.getHours().toString();
+            var minute = currentdate.getMinutes().toString();
+            var nowtime = hr + ": " + minute;
+            socket.emit('SET_TIME', {
+                id: socket.id,
+                parm: nowtime
+            });
+        });
+        $('#st_codetable').submit(function(e) {
+            e.preventDefault();
+            var el = document.getElementById("codetable_val");
+            var cs = el.options[el.selectedIndex].value;
+            socket.emit('SET_CODETABLE', {
+                id: socket.id,
+                parm: cs
+            });
+        });
+        $('#cpr1').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_CODETABLE', {
+                id: socket.id,
+                parm: 1
+            });
+        });
+        $('#cpr2').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_CODETABLE', {
+                id: socket.id,
+                parm: 2
+            });
+        });
+        $('#cpr3').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_CODETABLE', {
+                id: socket.id,
+                parm: 3
+            });
+        });
+        $('#cpr4').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_CODETABLE', {
+                id: socket.id,
+                parm: 4
+            });
+        });
+        $('#st_charset').submit(function(e) {
+            e.preventDefault();
+            var el = document.getElementById("charset_val");
+            var cs = el.options[el.selectedIndex].value;
+            socket.emit('SET_CHARSET', {
+                id: socket.id,
+                parm: cs
+            });
+        });
+        $('#st_reverse').submit(function(e) {
+            e.preventDefault();
+            if (reverse_status == '0') {
+                reverse_status = '1';
+                document.getElementById("rsv_on").value = "Reverse Char OFF";
+                document.getElementById("rsv_on").style.background = '#700000';
+            } else {
+                reverse_status = '0';
+                document.getElementById("rsv_on").value = "Reverse Char ON";
+                document.getElementById("rsv_on").style.background = '#308000';
+            }
+            socket.emit('SET_REVERSE', {
+                id: socket.id,
+                parm: reverse_status
+            });
+        });
+        $('#st_overwrite').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_OVERWRITE', {
+                id: socket.id
+            });
+        });
+        $('#st_Vscroll').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_VERTICAL_SCROLL', {
+                id: socket.id
+            });
+        });
+        $('#st_Hscroll').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SET_HORIZONTAL_SCROLL', {
+                id: socket.id
+            });
+        });
+        $('#displaytime').submit(function(e) {
+            e.preventDefault();
+            socket.emit('DISPLAY_TIME', {
+                id: socket.id
+            });
+        });
+        $('#displayperiod').submit(function(e) {
+            e.preventDefault();
+            var el = document.getElementById("period_val").value;
+            socket.emit('SET_PERIOD', {
+                id: socket.id,
+                parm: el
+            });
+        });
+        $('#displaycomma').submit(function(e) {
+            e.preventDefault();
+            var el = document.getElementById("comma_val").value;
+            socket.emit('SET_COMMA', {
+                id: socket.id,
+                parm: el
+            });
+        });
+        $('#displaysemi').submit(function(e) {
+            e.preventDefault();
+            var el = document.getElementById("semi_val").value;
+            socket.emit('SET_SEMICOLON', {
+                id: socket.id,
+                parm: el
+            });
+        });
+
+        $('#selftest').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SELF_TEST', {
+                id: socket.id
+            });
+        });
+        $('#A_INFO').submit(function(e) {
+            e.preventDefault();
+            socket.emit('MULTI_W', {
+                id: socket.id
+            });
+        });
+        $('#BASIC_WIN').submit(function(e) {
+            e.preventDefault();
+            socket.emit('A_BASIC', {
+                id: socket.id
+            });
+        });
+        $('#TEST_IMAGE').submit(function(e) {
+            e.preventDefault();
+            socket.emit('TEST_IMAGE', {
+                id: socket.id
+            });
+        });
+        $('#TEST_RASTER').submit(function(e) {
+            e.preventDefault();
+            socket.emit('TEST_RASTER', {
+                id: socket.id
+            });
+        });
+        $('#TEST_COLIMAGE').submit(function(e) {
+            e.preventDefault();
+            socket.emit('TEST_COLIMAGE', {
+                id: socket.id
+            });
+        });
+        $('#TEST_STYLE').submit(function(e) {
+            e.preventDefault();
+            socket.emit('TEST_STYLE', {
+                id: socket.id
+            });
+        });
+        $('#TEST_LAYOUT').submit(function(e) {
+            e.preventDefault();
+            socket.emit('TEST_LAYOUT', {
+                id: socket.id
+            });
+        });
+        $('#setfont').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SETFONT', {
+                id: socket.id
+            });
+        });
+        $('#setjis').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SETJIS', {
+                id: socket.id
+            });
+        });
+        $('#setsjis').submit(function(e) {
+            e.preventDefault();
+            socket.emit('SETSJIS', {
+                id: socket.id
+            });
+        });
+
+        $('#rdfontcode').submit(function(e) {
+            e.preventDefault();
+            socket.emit('RDFONTCODE', {
+                id: socket.id
+            });
+        });
+        $('#rdboot').submit(function(e) {
+            e.preventDefault();
+            socket.emit('RDBOOT', {
+                id: socket.id
+            });
+        });
+        $('#rdfw').submit(function(e) {
+            e.preventDefault();
+            socket.emit('RDFW', {
+                id: socket.id
+            });
+        });
+        $('#rdmf').submit(function(e) {
+            e.preventDefault();
+            socket.emit('RDMF', {
+                id: socket.id
+            });
+        });
+        $('#rdpname').submit(function(e) {
+            e.preventDefault();
+            socket.emit('RDPNAME', {
+                id: socket.id
+            });
+        });
+        $('#rdser').submit(function(e) {
+            e.preventDefault();
+            socket.emit('RDSERIAL', {
+                id: socket.id
+            });
+        });
+        $('#wrmf').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("mf_txt").value;
+            socket.emit('WRMF', {
+                id: socket.id,
+                parm: val
+            });
+        });
+        $('#setmacro').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("macrostage").value;
+            if(val == 'Start Macro') {
+                document.getElementById("macrostage").value = "End Macro";
+                var step = 'start';
+            }
+            else {
+                document.getElementById("macrostage").value = "Start Macro";
+                var step = 'end';
+            }
+            socket.emit('SETMACRO', {
+                id: socket.id,
+                parm: step
+            });
+        });
+        $('#execmacro').submit(function(e) {
+            e.preventDefault();
+            var v1 = document.getElementById("c_delay_id").value;
+            var v2 = document.getElementById("exc_delay_id").value;
+            socket.emit('EXECMACRO', {
+                id: socket.id,
+                parm: v1,
+                parm2: v2
+            });
+        });
+        $('#wrpname').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("pname_txt").value;
+            // socket.emit('WRPNAME', {
+            //     id: socket.id,
+            //     token: rcvToken,
+            //     parm: val
+            // });
+            Post_Message('wrpname', val);
+        });
+        $('#wrser').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("serial_txt").value;
+            Post_Message('wrserial', val);
+        });
+        //--------------------------------------- 
+        socket.on('done', function(data) {
+            $('#ID_Prnstatus').val(data);
+        });
+        socket.on('wrong', function(data) {
+            console.log("wrong user!! ");
+        });
+        socket.on('return status', function(data) {
+            console.log("status: " + data);
+        });
+        socket.on('verified', function(data) {
+            console.log("login success! : " + data);
+        });
+        socket.on('return error', function(data) {
+            alert(data);
+        });
+
+        socket.on('rcvmf', function(data) {
+            document.getElementById("mf_txt").value = data;
+        });
+        socket.on('rcvpname', function(data) {
+            document.getElementById("pname_txt").value = data;
+        });
+        socket.on('rcvserial', function(data) {
+            document.getElementById("serial_txt").value = data;
+        });
+    });
+    //---------------------------------
+
+    function Post_Message(cmd, val) {
+        $.ajax({
+            url: "http://localhost:8081/api/postman",
+            type: "POST",
+            data: JSON.stringify({
+                "cmd": cmd,
+                "parm": val
+            }),
+            dataType: "json",
+            contentType: "application/json",
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert("send cmd fail : " + thrownError);
+            }
+        });
+
+    }
+</script>
+
+
+</html>

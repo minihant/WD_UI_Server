@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>POS7300 command Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <script defer src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/styles.css">
+    <script src="./lib/POS7300_fn.js"></script>
+</head>
+
+<body>
+    <header>POS7300 Command
+        <input id="version_id" class="verbox" readonly>
+        <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">format_list_numbered_rtl</i>
+        </button>
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/")>HOME</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/ESCPOS")>ESCPOS</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/CD5220")>CD5220</a><br><br>
+            <!--a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/POS7300")>POS7300</a><br><br-->
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Windows")>Window</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/WPFontloader")>PRINTER</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Tools")>Tools</a>
+        </ul>
+        <input id="mem_id" class="membox" readonly>
+    </header>
+    <nav>
+        <input id="time_id" class="timebox" readonly>
+        <input id="user_id" class="userbox" placeholder="Login User" readonly>
+        <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="40" class="statusmessage" readonly></textarea>
+    </nav>
+    
+<ul class="mybox-5">
+    <li>
+        <h6>Show String:</h6>
+    </li>
+    <li>
+        <a>
+        <textarea id="txt_line1" rows="1" cols="20" maxlength="20">Line1</textarea>   
+        <button id="line1" type="submit" class="btn">Upper Line</button>
+        </a>
+    </li>
+    <li>
+        <a>
+        <textarea id="txt_line2" rows="1" cols="20" maxlength="20">Line2</textarea>
+        <button id="line2" type="submit" class="btn">Lower Line </button>
+        </a>
+    </li>
+    <li>
+        <a>
+        <textarea id="txt_upscroll" rows="2" cols="20" maxlength="20">Line1 scroll</textarea>
+        <button id="upperscroll" type="submit" class="btn">Upper Line Scroll</button>
+        </a>
+    </li>
+    <li>
+        <a>
+        <textarea id="txt_bottomscroll" rows="2" cols="20" maxlength="40">Nodejs Line Display Demo</textarea>
+        <button id="bottomscroll" type="submit" class="btn">Bottom Line Scroll</button>
+        </a>
+    </li>
+    <li>
+        
+        <a>
+        <form id="insrting">
+        <textarea id="in_txt" rows="2" cols="20" maxlength="40">Free String input</textarea>
+        <button type="submit" class="btn">Write String</button>
+        </form>    
+        </a>
+    
+    </li>
+</ul>
+<ul class="mybox-5">
+        <li>
+            <h6>Display Setting</h6>
+        </li>
+        <li>
+            <a>
+            <input id="initial" type="submit" value="Initial Display" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <input id="clear" type="submit" value="Clear Display" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <input id="self" type="submit" value="Self Test" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <button id="st_overwrite" type="submit" class="btn">Overwrite Mode</button>
+            </a>
+        </li>
+        <li>
+            <a>
+            <button id="st_Vscroll" type="submit" class="btn">Vertical Scroll</button>
+            </a>
+        </li>
+        <li>
+            <a>
+            <button id="st_Hscroll" type="submit" class="btn">Horizontal Scroll</button>
+            </a>
+        </li>
+        <li>
+            <a>
+            <input id="st_reverse" type="submit" id="rsv_on" value="Reverse ON" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <button id="st_time" type="submit" class="btn">Set Now Time</button>
+            </a>
+        </li>
+        <li>
+            <a>
+            <button id="show_time" type="submit" class="btn">Show Time</button>
+            </a>
+        </li>
+        <li>
+            <a>
+            <input type="range" value="4" min="1" max="4" id="britnesss_val" oninput="bright_txt.value = britnesss_val.value">
+            <output id="bright_txt">4</output><br>
+            <button id="brightness" type="submit" class="btn">Brigtness adj</button>
+            </a>
+        </li>
+</ul>
+<ul class="mybox-5">
+    <li>
+        <h6>Cursor Move</h6>
+    </li>
+    <li>
+        <a>
+        <input id="btcs_on" type="submit" value="Cursor ON"  class="btn">
+        </a>
+    </li>
+    <li>
+        <a>
+        <input id="clr_csline" type="submit" value="Clear CS Line"  class="btn">
+        </a>
+    </li>
+    <li>
+        <a>
+            X:<input type="range" value="1" min="1" max="20" id="pos_x" oninput="x_val.value = pos_x.value">
+            <output id="x_val">1</output><br>
+            y:<input type="range" value="1" min="1" max="2" id="pos_y" oninput="y_val.value = pos_y.value">
+            <output id="y_val">1</output><br>
+            <button id="cs_mvXY" type="submit" class="btn">Move Cursor to XY:</button>
+        </a>
+    </li>
+    <div class="mbtn-group" style="width:100%">
+        <button id="cs_mvLM" style="width:33.3%"><i class="material-icons">skip_previous</i></button>
+        <button id="cs_mvU" style="width:33.3%"><i class="material-icons">keyboard_arrow_up</i></button>
+        <button id="cs_mvRM" style="width:33.3%"><i class="material-icons">skip_next</i></button>
+    </div>
+    <div class="mbtn-group " style="width:100% ">
+        <button id="cs_mvL" style="width:50%"><i class="material-icons">keyboard_arrow_left</i></button>
+        <button id="cs_mvR" style="width:50%"><i class="material-icons">keyboard_arrow_right</i></button>
+    </div>
+    <div class="mbtn-group " style="width:100% ">
+        <button id="cs_mvH" style="width:33.3%"><i class="material-icons">home</i></button>
+        <button id="cs_mvD" style="width:33.3%"><i class="material-icons">keyboard_arrow_down</i></button>
+        <button id="cs_cr" style="width:33.3%"><i class="material-icons">keyboard_return</i></button>
+    </div>
+    <div class="mbtn-group " style="width:100% ">
+        <button id="bs" style="width:33.3%"><i class="material-icons">backspace</i></button>
+        <button id="ht" style="width:33.3%"><i class="material-icons">keyboard_tab</i></button>
+        <button id="lf" style="width:33.3%"><i class="material-icons">last_page</i></button>
+    </div>
+</ul>
+<ul class="mybox-5">
+    <li>
+        <h6>Advance Setting</h6>
+    </li>
+    <li>
+        <a>
+        <select id="device_val">
+            <option value="1" selected>Printer</option>
+            <option value="2">Display</option>
+            <option value="3">Both</option>
+        </select>
+        <button id="sel_device" type="submit" class="btn">Peripheral Device</button>
+        </a> 
+        <a>  
+            line:<input type="range" value="1" min="1" max="2" id="clrbline" oninput="clrblk_txt.value = clrbline.value">
+                <output id="clrblk_txt">1</output><br>
+            <form id="clr_bline"><button type="submit" class="btn">Clear Blink Line</button></form>
+
+            line:<input type="range" value="1" min="1" max="2" id="stline" oninput="stblk_txt.value = stline.value">
+                <output id="stblk_txt">1</output><br>
+            <form id="st_bline"> <input type="submit" value="Set Blink Line" class="btn"> </form>
+        </a>
+
+    <li>
+        <a>
+            rate:<input type="range" value="0" min="0" max="20" id="blink_rate" oninput="blink_val.value = blink_rate.value">
+            <output id="blink_val">0</output>
+            <button id="blink" type="submit" class="btn">Blinking Display</button>
+        </a>
+    </li>
+    <li>
+        <a>
+            x:<input type="range" value="1" min="1" max="12" id="vscrollup" oninput="vscrollup_txt.value = vscrollup.value">
+                <output id="vscrollup_txt">1</output>
+            <form id="vsup"> <input type="submit" value="VScroll Upper" class="btn"> </form>
+        </a>
+    </li>
+    <li>
+        <a>
+            x:<input type="range" value="1" min="1" max="12" id="vscrolldn" oninput="vscrolldn_txt.value = vscrolldn.value">
+                <output id="vscrolldn_txt">1</output><br>
+            <form id="vsdn"> <input type="submit" value="VScroll Down" class="btn"> </form>
+        </a>
+    </li>
+    <li>
+        <a>
+            x:<input type="range" value="1" min="1" max="40" id="posval" oninput="pos_txt.value = posval.value">
+                <output id="pos_txt">1</output><br>
+            <form id="position"> <input type="submit" value="Display Position" class="btn"> </form>
+        </a>
+    </li>
+    
+</ul>
+<ul class="mybox-5">
+    <li>
+        <h6>Character Setting</h6>
+    </li>
+    <li>
+        <a>
+        <select name="cahrset_id" id="charset_val">
+            <option value=0 selected>U.S.A</option>
+            <option value=1>France</option>
+            <option value=2>Germany</option>
+            <option value=3>U.K</option>
+            <option value=4>Denmark I</option>
+            <option value=5>Sweden</option>
+            <option value=6>Italy</option>
+            <option value=7>Spain</option>
+            <option value=8>Japan</option>
+            <option value=9>Norway</option>
+            <option value=10>Danmark II</option>
+        </select>
+        <button id="i_char" type="submit" class="btn">Internal character set</button>
+        </a>
+    </li>
+    <li>
+        <a>
+        <select id="cp_val">
+                    <option value=0 selected>CP_437</option>
+                    <option value=1>Katakana</option>
+                    <option value=2>CP-850(Multilingual)</option>
+                    <option value=3>CP-860(Portugese)</option>
+                    <option value=4>CP-863(Canadian-French)</option>
+                    <option value=5>CP-865(Nordic)</option>
+                    <option value=6>Slawie</option>
+                    <option value=7>Russia</option>
+                    <option value=8>CP-737(Greek)</option>
+                    <option value=9>CP-852(Hungary)</option>
+                    <option value=10>CP-862(Hebrew)</option>
+                    <option value=11>CP-851(Greek)</option>
+                    <option value=12>CP-853(Turkish)</option>
+                    <option value=13>CP-857(Turkish)</option>
+                    <option value=14>CP-737(Greek)</option>
+                    <option value=15>ISO8859-7(Greek)</option>
+                    <option value=16>WPC-1252(Latin1)</option>
+                    <option value=17>CP866(Cyrillic,Russian)</option>
+                    <option value=18>CP-852(Slavonic)</option>
+                    <option value=19>CP-858(Multilingual)</option>
+                    <option value=20>KU42(Thai)</option>
+                    <option value=21>TIS11(Thai)</option>
+                    <option value=22>TIS13(Thai)</option>
+                    <option value=23>TIS14(Thai)</option>
+                    <option value=24>TIS16(Thai)</option>
+                    <option value=25>TIS17(Thai)</option>
+                    <option value=26>TIS18(Thai)</option>
+                    <option value=30>TCVN3-1(Vietnamese)</option>
+                    <option value=31>TCVN3-2(Vietnamese)</option>
+                    <option value=32>CP-720(Arabic)</option>
+                    <option value=33>CP-775(Baltic)</option>
+                    <option value=34>CP-855(Cyrillic)</option>
+                    <option value=35>CP-861(Iceland)</option>
+                    <option value=36>CP-862(Hebrew)</option>
+                    <option value=37>CP-864(Arabic)</option>
+                    <option value=38>CP-869(Greek)</option>
+                    <option value=39>ISO8859-2(Central European)</option>
+                    <option value=40>ISO8859-15(Latin9)</option>
+                    <option value=41>CP-1098(Farsi)</option>
+                    <option value=42>CP-1118(Lithuanian)</option>
+                    <option value=43>CP-1119(Lithuanian)</option>
+                    <option value=44>CP-1125(Ukrainian)</option>
+                    <option value=45>WCP-1250(Central European)</option>
+                    <option value=46>WCP-1251(Cyrillic,Russian)</option>
+                    <option value=47>WCP-1253(Greek)</option>
+                    <option value=48>WCP-1254(Turkish)</option>
+                    <option value=49>WCP-1255(Hebrew)</option>
+                    <option value=50>WCP-1256(Arabic)</option>
+                    <option value=51>WCP-1257(Baltic)</option>
+                    <option value=52>WCP-1258(Vietnamese)</option>
+                    <option value=53>KZ1048(Kazakhstan)</option>
+        </select>
+        <button id="cp" type="submit" class="btn">Code Table</button>
+        </a>
+    </li>
+    <li>
+        <a>
+            <input type="checkbox" id="set_win" value="1">Set Window Range<br>
+            wno:<input type="range"   value="1" min="1" max="4" id="win_no" oninput="win_txt.value = win_no.value">
+            <output id="win_txt">1</output><br>
+            x1:<input type="range" value="1" min="1" max="20" id="wx1" oninput="wx1_txt.value = wx1.value">
+            <output id="wx1_txt">1</output><br>
+            y1:<input type="range" value="1" min="1" max="2" id="wy1" oninput="wy1_txt.value = wy1.value">
+            <output id="wy1_txt">1</output><br>
+            x2:<input type="range" value="1" min="1" max="20" id="wx2" oninput="wx2_txt.value = wx2.value">
+            <output id="wx2_txt">1</output><br>
+            y2:<input type="range" value="1" min="1" max="2" id="wy2" oninput="wy2_txt.value = wy2.value">
+            <output id="wy2_txt">1</output><br>
+            <button id="wrange" type="submit" class="btn">Windows Range</button>
+        </a>
+    </li>   
+</ul>
+<footer>Copyright &copy; http://www.winpos.com.tw</footer>
+
+<script>
+    window.onload = webstart();
+</script>
+</body>
+</html>

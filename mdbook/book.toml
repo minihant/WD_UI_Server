@@ -1,0 +1,8 @@
+[book]
+authors = ["Hant.Shen"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Sinpos Display UI server"
+[output.html.playpen]
+editable = true

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/styles.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <script src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/index_msg_TC.js"></script>
+    <script src="./lib/WP_Fontloader_fn.js"></script>
+</head>
+
+<body>
+    <header>
+        Cloud Fontloader for Printer
+        <input id="version_id" class="verbox" readonly>
+        <!--a id="demo-menu-lower-right" href="/"
+                class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">home</i>
+        </a-->
+        <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">format_list_numbered_rtl</i>
+        </button>
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/")>HOME</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/ESCPOS")>ESCPOS</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/CD5220")>CD5220</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/POS7300")>POS7300</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Windows")>Window</a><br><br>
+            <!--a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/WPFontloader")>PRINTER</a><br><br-->
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Tools")>Tools</a>
+            
+        </ul>
+        <input id="mem_id" class="membox" readonly>
+    </header>
+    <nav>
+        <a>
+            <input id="time_id" class="timebox" readonly>
+            <input id="user_id" class="userbox" placeholder="Login User" readonly>
+            <textarea id="ID_Prnstatus" type="text" placeholder="status" rows="1" cols="40" readonly class="statusmessage"></textarea>
+        </a>
+        
+    </nav>
+    <div id="id01" class="modal">
+        <form class="modal-content animate" name="login">
+            <div class="imgcontainer">
+                <span onclick="document.getElementById('id01').style.display='none'" class="close">
+                    <i class="material-icons">cancel</i>
+                </span>
+            </div>
+            <div class="logincontainer">
+                <i class="material-icons">group</i>
+                <input type="text" placeholder="Enter User Name" id="uname" required><br>
+                <i class="material-icons">fingerprint</i>
+                <input type="password" placeholder="Enter Password" id="psw" required>
+                <input id="chkuser"  class="btn" type="submit" value="Submit">
+            </div>
+            
+        </form>
+    </div>
+    <script>
+        // Get the modal
+        var modal = document.getElementById('id01');
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {   
+            if (event.target == modal) {       
+                modal.style.display = "none";   
+            }
+        }
+    </script>
+    <div class="mybox-5">
+        <li>
+            <h5>Configuration</h5>
+        </li>
+        <li>
+            <a>
+            <input id="openlogin" class="btn" type="submit" value="Login">
+            <input id="rdinfo" class="btn" type="submit"  value="Read Info">
+            </a>
+        </li>
+    </div>
+    <div class="mybox-5">
+        <li>
+            <h5>Device Information</h5>
+        </li>
+        <li>
+            <!-- <input id='rdflashid' type='submit' value='Read flash id' class="btn">
+            <input id='rdfontcode' type='submit' value='Read Font Code' class="btn"> -->
+            <div><label>Model Name:</label><input id="device_id" class="informsg" readonly></div> 
+            <div><label>Font Code:</label><input id="fontcode" class="informsg" readonly></div>
+            <div><label>Flash ID:</label><input id="flash_id" class="informsg" readonly></div>
+        </li>
+        <li>
+            <h5>Upload Function</h5>
+        </li>
+        <li>
+            <a>
+            <lable id="mylable_id">*.Tsk</lable>
+            <form id='uploadfile' action='/WPFileUpload' method='post' encType="multipart/form-data">
+                <input id = "selfile_id" class="fileselect" type="file" name="sampleFile">
+                <input id = "getfile_id" class="btn"  type='submit' value='Upload File'>
+            </form>
+            </a>
+        </li>
+        <li>
+            <a>
+            <input id='fontwrite' type='submit' value='Font Update' class="btn" >
+            <!-- <div id="myProgress">
+                <div id="myBar">0%</div>
+            </div> -->
+            </a>
+        </li>
+        <li>
+            <form>
+                <h6>Test Function</h6>
+                <input id='selftest' type='submit' value='Self Test' class="btn" >
+            </form>
+        </li>
+    </div>
+    <!-- <footer>Copyright &copy; https://winpos.com.tw</footer> -->
+    <footer>
+        <!--div id="myProgress">
+            <div id="myBar">Copyright &copy; https://winpos.com.tw</div>
+        </div-->
+        <div id="myBar" class="myProgress"> 0%</div>
+    </footer>
+    <script>
+        window.onload = webstart();
+     </script>
+</body>
+</html>
+
+

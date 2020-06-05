@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WinPOS Display Server</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <script defer src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/styles.css">
+    <script src="./lib/tool_msg.js"></script>
+    <script src="./lib/Tools_fn.js"></script>
+</head>
+
+<body>
+    <header>Tools 
+        <input id="version_id" class="verbox" readonly>
+        <!--a id="demo-menu-lower-right" href="/"
+                class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">home</i>
+        </a-->
+        <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">format_list_numbered_rtl</i>
+        </button>
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url('/')>HOME</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/ESCPOS")>ESCPOS</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/CD5220")>CD5220</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/POS7300")>POS7300</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Windows")>Window</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/WPFontloader")>PRINTER</a><br><br>
+            <!--a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Tools")>Tools</a-->
+        </ul>
+        <input id="mem_id" class="membox" readonly>
+    </header>
+    <nav>
+        <a>
+            <input id="time_id" class="timebox" readonly>
+            <input id="user_id" class="userbox" placeholder="Login User" readonly> 
+            <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="60" readonly class="statusmessage"></textarea>
+        </a>
+    </nav>
+    <div class="mybox-4">
+        <li>
+            <h6>Bitmap Display</h6>
+        </li>
+        <li>
+            <form id='uploadBMPForm' action="/Upload" method='POST' encType="multipart/form-data">    
+                <img id = "preview"/>
+                <input id ="fileInputControl" class="Filecontainer" type="file" accept=".bmp" name="sampleFile" />
+                <input id ="savebmp" type='submit' value='Upload BMP File' class="btn"><br>
+            </form>
+        </li>
+        <li>
+            <a>
+            <label>Save BMP file to:</label><br>
+            <input type="radio" name="bid" value="0" checked>: ____RAM<br>
+            <input type="radio" name="bid" value="1">: NVRAM_1<br>
+            <input type="radio" name="bid" value="2">: NVRAM_2<br>
+            <input type="radio" name="bid" value="3">: NVRAM_3<br>
+            <input type="radio" name="bid" value="4">: NVRAM_4<br>
+            <input type="radio" name="bid" value="5">: NVRAM_5<br>
+            <input type="radio" name="bid" value="6">: NVRAM_6<br>
+            <input type="radio" name="bid" value="7">: NVRAM_7<br>
+            <input type="radio" name="bid" value="8">: NVRAM_8<br>
+            <input type="radio" name="bid" value="9">: NVRAM_9<br>
+            <a>
+                <input id='bmpwrite' type='submit' value="Write BMP to Device"  class="btn">
+                <input id='dspbmp' type="submit" value="Show BMP" class="btn">  
+            </a>
+        </li> 
+
+    </div>
+    <div class="mybox-4">
+        <li>
+            <h6>Read Information:</h6>
+        </li>
+        <li>
+            <a>
+            <input id="rdmf" type="submit" value="Manufacture" class="btn">
+            </a>
+            <a>
+            <input id="rdpname" type="submit" value="ModelName" class="btn">
+            </a>
+            <a>
+            <input id="rdser" type="submit" value="Serial Number" class="btn">
+            </a>
+            <a>
+            <input id="rdfontcode" type="submit" value="Font Code" class="btn">
+            </a>
+            <a>
+            <input id="rdboot" type="submit" value="Boot Version" class="btn">
+            </a>
+            <a>
+            <input id="rdfw" type="submit" value="FW Version" class="btn">
+            </a>
+        </li>
+    </div>
+    <div class="mybox-4">
+        <li>
+            <h6>Write Information:</h6>
+        </li>
+        <li>
+            <a>
+                <textarea id="mf_txt" rows="1" cols="20" maxlength="40"></textarea>
+                <input id="wrmf" type="submit" value="Write Manufacture" class="btn">
+            </a>
+            <a>
+                <textarea id="pname_txt" rows="1" cols="20" maxlength="40"></textarea>
+                <input id="wrpname" type="submit" value="Write ModelName" class="btn">
+            </a>
+            <a>
+                <textarea id="serial_txt" rows="1" cols="20" maxlength="40"></textarea>
+                <input id="wrser" type="submit" value="Write SerialNumber" class="btn">
+            </a>
+        </li> 
+    </div>
+    <div class="mybox-4">
+        <li>
+            <a>
+            <form>
+                <h6>FW update</h6>
+                <lable>*.hex </lable>
+                <input type="file" id="fw-uploader" data-target="fileUploader" accept=".hex"/>
+                <input id="FWwrite" type='button' value='Firmware Update' class="btn">
+                
+            </form>      
+            
+            <form id='uploadForm' action='/Upload' method='post' encType="multipart/form-data">
+                <h6>FONT update</h6>
+                <lable>*.Tsk </lable>
+                <input type="file" id="fontfile-uploader"  accept=".Tsk" name="sampleFile"/>
+                <input id="fontupload" type='submit' value='Upload' class="btn">
+            </form>
+            <input id="fontwrite" type='submit' value='Font Write' class="btn">
+                
+            </a>
+            
+        </li>
+        <li>
+            <h6>Engineering Mode:</h6>
+        </li>
+        <li>
+            <a>
+            <textarea name="message" rows="1" cols="20" maxlength="60" id="hexstr"></textarea><br>
+            </a>
+            <a>
+            <input id='sendhexstr' type="submit" value='Send Hex Data' class="btn" />
+            </a>
+        </li> 
+    </div>
+    
+    <footer>
+        <div id="myBar" class="myProgress"> 0%</div>
+    </footer>
+    <div id="id01" class="modal">
+        <form class="modal-content animate" id="chkuser" name="login">
+            <div class="imgcontainer">
+                <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
+            </div>
+            <div class="logincontainer">
+                <label><b>Username</b></label>
+                <input type="text" placeholder="Enter E-mail" name="uname" required>
+
+                <label><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <input type="submit" onclick="document.getElementById('id01').style.display='none'" value="Login">
+                <!--input type="submit" name="login" onclick=UserLogin() value="Login" /-->
+                <input type="checkbox" checked="checked" value="Remember me">
+            </div>
+
+            <!--div> class="logincontainer" style="background-color:#f1f1f1">
+            <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            </div-->
+        </form>
+    </div>
+
+    <script>
+        window.onload= load();
+    </script>
+</body>
+</html>

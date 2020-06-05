@@ -1,0 +1,13 @@
+version: "2"
+services:
+  ui-server:
+    restart: always
+    image: minihant/dpserver:v2.12
+    build: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8081:8081
+      - 8082:8082
+    volumes:
+      - /upload:/upload

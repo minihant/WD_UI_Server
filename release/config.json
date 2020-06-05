@@ -1,0 +1,14 @@
+{
+    "username": "hant",
+    "password": "hant8425",
+    "comport": "COM5",
+    "baudrate": "115200",
+    "datalen": "none",
+    "parity": "8",
+    "http_port": 8081,
+    "IF_port": 8082,
+    "browser": "ENABLE",
+    "DOWNLOAD_FONT": "DISABLE",
+    "DNSNAME": "wpdocker.ddnsfree.com",
+    "CONTAINER_IP": "172.18.0.1"
+}

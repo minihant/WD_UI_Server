@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "fontloader-3a034",
+  "private_key_id": "2f77564fc94c3a4d3b3597e309216cb6059bde21",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDffnZTcTl8yibP\nwhU5KXtm8Jr8wQ+YIOZl9sh5xmQYp3iV60I64oSiwm0RMle7Wvbx5ntgGeKDXt5t\nO1iAAZCz+tTPd2Qm2LqcdjBF5w/1Q692/yXS/O6lC3eT0hElb8AXRhJ43WuVIrhq\nvfRhIsk9Xa+paPYVieDoETglGPpPJTsfK8AwzzYnnr2nRcHQAfpxgqEhlBl7lubh\nBpiGTFT7iW47X5mk0d9MYjvb9m3AZtEEE1q29/kS6yJyKCE+/Yhty4PgumF++5AD\ngSSUyuXRgBtDy4opqWu9YafzloFcCGdD7xKlSHUMxzSIvsMn///cYVuBsiF2AZC4\nGDcIKTZzAgMBAAECggEAJe0uhEt/D3O4sWIEuv4UoGvtST4z+MOAhcYi0DOAEgT9\nfCd/xkFhc8NdweDSrYsqw/MydaT+4P9M7Kl5A8QAO+KxkYF3v/XgeSO/XmVvOlZh\npOZ4kzzz/JMdGDs6SKmVpf1wrg0ZMCZDuG2C1qcSEnVfFXcn55DN12PwrK73700X\nayDXIK/cVvTEvK1qmCxwv72Sc13SAJES9wmHAd4g0Nf7hZ0rK5UmhGZopnQbhuan\nRcFraU/9TCLhHDKAYF4S8+ZC675MnoaQ9r6pr6BgRVKJYZF5WC/i9td5/QFE0Kri\naxw7He6DAm24AU9GauxNrreM0iza6RG/SQEGhNhVfQKBgQD2RD8NBFi8bq1JOt1m\nDBu1cCpTGetqqT1qa4rhJaRmPR2alco6dhwlCvai7HOPforT9fahlBOt6spOC926\n/qvet71nCeVtppLdKwq+vTVxrFk9J1iOQ9oKE7p28xagrraGJh2vKKXvZVruMaaG\nKqzq5hr0x/3WUagbbL1kj2y73wKBgQDoU8zZEq6vnOd4yWYVurzB7CBDDTBJq2l7\nuEKSaYysq4Ew5HcwI29YpP/8IBjnMDBBUYpYR9yaVmE6zpimJ0+A2p1z7fLnGN4y\nWWi5987pAV/Ay3BflkajAcTphLwZHqt0K453+ycn6aFeUDSpK/1KIlyOQSQUrphE\nd2S7KCnX7QKBgAigq3TRSiqP1hJStZ71naLloxX2OoEqHLS1v8/Tecb7LSZVSRhz\nOtkxYSKkFghY7pQucc2HWoklSKEjWUlL0smitkf92MPWqh6Fe4LjLhQlbZru3fNd\n/S2NM2MncQuAE3TvsOqKCgYxDtZ5dtQMerJgDWG1//aaNcGANcJoI+8RAoGAdYM1\noTLG8wLdPgY4wZLzuO7znpbELu8p6q9X1PDYe9o//XgCJXI29tJ2vJOLpRyFu/Q/\nksm+dr5sba9kHN7TYuyxKZtY+rVkZnk89Ju4p7jPMxhz3ZWIYxkY/bjq35XYyWji\npiN+Obz9p1PQXyVl96KLyFSAqIlrcW4moFf/Wj0CgYEA1yem0lsaJKz0kA+8Zy0N\nGU/yA8vrwcLfz0f2DeFwy9MEghLjMhYoWu7/bvbQsMcuLHR1HXom0359QbejIbqZ\nYSOo3m608Vehneq4p+t7kPwRHmgVJ3NcyfAMd25GX/hsXXXteIXUs9PE9jP7kIk7\nDxbmqsqWXflgakD36fhFvNY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "fontloader-for-pc@fontloader-3a034.iam.gserviceaccount.com",
+  "client_id": "101693222548757217693",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/fontloader-for-pc%40fontloader-3a034.iam.gserviceaccount.com"
+}

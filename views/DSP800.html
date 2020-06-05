@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DSP800 command Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <script defer src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/styles.css">
+</head>
+
+<body>
+    <header>DSP800 Command
+        <a id="demo-menu-lower-right" href="/"
+                class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">home</i>
+        </a>
+    </header>
+    <nav>
+        <a>
+            <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="40" class="statusmessage" readonly></textarea>
+        </a>
+    </nav>
+
+    <div class="mybox-4">
+        <li>
+            <h6>Display Setting</h6>
+        </li>
+        <li>
+            <a>
+                <form id="initial"> <input type="submit" value="Initial Display" class="btn"> </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="selftest"> <input type="submit" value="Self Test"  class="btn"> </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="brightness">
+                        X:<input type="range" name="message" value="4" min="1" max="4" id="britnesss_val"  oninput="br_out.value = britnesss_val.value">
+                        <output id="br_out">4</output><br>
+                    <button type="submit" class="btn">Brightness</button>
+                     
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <lable>Select peripheral device</lable>
+                <form id="device">
+                    <select id="device_val">
+                        <option value="1" selected>Printer</option>
+                        <option value="2">Display</option>
+                    </select>
+                    <button id="tt2" type="submit" class="btn">Select Device</button>
+                    <div class="mdl-tooltip" for="tt2">
+                        Select peripherral device:<br>Printer or Display
+                    </div>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <lable>Select Internal Char Set</lable>
+                <form id="st_charset">
+                    <select name="cahrset_id" id="charset_val">
+                        <option value="0" selected>U.S.A</option>
+                        <option value="1">France</option>
+                        <option value="2">Germany</option>
+                        <option value="3">UK</option>
+                        <option value="4">Denmark I</option>
+                        <option value="5">Sweden</option>
+                        <option value="6">Italy</option>
+                        <option value="7">Spain</option>
+                        <option value="8">Japan</option>
+                        <option value="9">Norway</option>
+                        <option value=":">Denmark II</option>
+                    </select>
+                    <button type="submit" class="btn">Select charset</button>
+                </form>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-4">
+        <li><h6>Blinking Rate Setting</h6></li>
+        <li>
+            <a>
+                Rate:<br><input type="range" name="message" value="0" min="0" max="255" id="b_rate" oninput="rate_out.value = b_rate.value">
+                <output id="rate_out">0</output><br>
+                <form id="blinking"><button type="submit" class="btn">Blinking</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                X:<input type="range" name="message" value="1" min="1" max="40" id="x_val"  oninput="x_out.value = x_val.value">
+                <output id="x_out">1</output><br>
+                <form id="pos_x"><button type="submit" class="btn">Move CS</button></form>
+            </a>
+        </li>
+        <li>
+            <lable>Clear Range/Move CS</lable>
+            <a>
+                L:<input type="range" name="message" value="1" min="1" max="40" id="l_range" onchange="changeLeft()" oninput="l_out.value = l_range.value">
+                <output id="l_out">1</output><br>
+                R:<input type="range" name="message" value="1" min="1" max="40" id="r_range" onchange="changeRight()" oninput="r_out.value = r_range.value">
+                <output id="r_out">1</output><br>
+                <form id="clr_range"><button type="submit" class="btn">Clear Range</button></form>
+            </a>
+        </li>
+        
+    </div>
+    <div class="mybox-4">
+        <li><h6>Layer Setting</h6></li>
+        <li>
+            <lable>Save data to Layer:</lable>
+            <a>
+                Layer:<br><input type="range" name="message" value="1" min="1" max="3" id="layer" oninput="layer_out.value = layer.value">
+                <output id="layer_out">1</output><br>
+                <form id="savelayer"><button type="submit" class="btn">Save to demo Dispaly</button></form>
+            </a>
+        </li>
+        <li>
+            <lable>Display saved data Layer/Mode</lable>
+            <a>
+                Layer:<br><input type="range" name="message" value="1" min="1" max="7" id="save_data1"  oninput="save_out1.value = save_data1.value">
+                <output id="save_out1">1</output><br>
+                Mode:<br><input type="range" name="message" value="1" min="1" max="7" id="save_data2"  oninput="save_out2.value = save_data2.value">
+                <output id="save_out2">1</output><br>
+                <form id="showsavedata"><button type="submit" class="btn">Display Save Data</button></form>
+            </a>
+        </li> 
+    </div>
+    <footer>Copyright &copy; http://www.winpos.com.tw</footer>
+
+<script>
+    var reader;
+    var output = "";
+
+    $(function() {
+        var rcvToken;
+        var uuid;
+        var cs_status = 0;
+        var reverse_status = '0';
+        var socket = io.connect();
+        socket.emit('NewClient');
+        
+        $('#initial').submit(function(e) {
+            e.preventDefault();
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd:'INITIAL',
+            });
+        });
+        $('#selftest').submit(function(e) {
+            e.preventDefault();
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'SELFTEST',
+            });
+        });
+        $('#blinking').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("b_rate").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'BLINK',
+                parm: val
+            });
+        });
+        $('#device').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("device_val").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'DEVICE',
+                parm: val
+            });
+        });
+        $('#pos_x').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("x_val").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'MV_CS',
+                parm: val
+            });
+        });
+        $('#clr_range').submit(function(e) {
+            e.preventDefault();
+            var n= document.getElementById("l_range").value;
+            var m= document.getElementById("r_range").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'CLR_RANGE',
+                p1: n,
+                p2:m,
+            });
+        });
+        $('#savelayer').submit(function(e) {
+            e.preventDefault();
+            var val= document.getElementById("layer_out").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'SAVE_LAYER',
+                parm: val,
+            });
+        });
+        $('#showsavedata').submit(function(e) {
+            e.preventDefault();
+            var v1= document.getElementById("save_out1").value;
+            var v2= document.getElementById("save_out2").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'SHOW_SAVE_DATA',
+                p1: v1,
+                p2: v2,
+            });
+        });
+        $('#st_charset').submit(function(e) {
+            e.preventDefault();
+            var el = document.getElementById("charset_val");
+            var cs = el.options[el.selectedIndex].value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'SEL_ICS',
+                parm: cs
+            });
+        });
+        $('#brightness').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("britnesss_val").value;
+            socket.emit('DSP800_', {
+                id: uuid,
+                cmd: 'BRIGHTNESS',
+                parm: val
+            });
+        });
+        //--------------------------------------- 
+        socket.on('done', function(data) {
+            $('#ID_Prnstatus').val(data);
+        });
+        socket.on('LoginSuccess', function(data) {
+            rcvToken = data.token;
+            $('#ID_Prnstatus').val('Login : ' + data.id);
+        });
+        socket.on('regist_client', function(data) {
+            uuid = data;
+        });
+        socket.on('haveToken', function(data) {
+            rcvToken = data;
+        });
+    });
+
+    //------------------------------------------------------	
+    function changeLeft(){
+        var l = parseInt(document.getElementById("l_range").value);
+        var r = parseInt(document.getElementById("r_range").value);
+        if( r <= l ) {
+            document.getElementById("r_range").value = document.getElementById("l_range").value;
+            document.getElementById("r_out").value = document.getElementById("l_range").value;
+        }
+        // $('#ID_Prnstatus').val('Rang : ' + l+" - "+document.getElementById("r_range").value );
+    }
+    function changeRight(){
+        var l = parseInt(document.getElementById("l_range").value);
+        var r = parseInt(document.getElementById("r_range").value);
+        if( r <= l) {
+            document.getElementById("l_range").value = document.getElementById("r_range").value;
+            document.getElementById("l_out").value = document.getElementById("r_range").value;
+        }
+        // $('#ID_Prnstatus').val('Rang : ' + document.getElementById("l_range").value +" - "+  document.getElementById("r_range").value);
+    }
+    
+    function SetCodeTable() {
+        var socket = io.connect();
+        var el = document.getElementById("codetable_val");
+        var cs = el.options[el.selectedIndex].value;
+        socket.emit('SET_CODETABLE', {
+            id: uuid,
+            token: rcvToken,
+            parm: cs
+        });
+    }
+</script>
+</body>
+</html>

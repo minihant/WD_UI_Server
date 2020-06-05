@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AEDEX command Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <script defer src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/styles.css">
+</head>
+
+<body>
+    <header>AEDEX Command
+        <a id="demo-menu-lower-right" href="/"
+                class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">home</i>
+        </a>
+    </header>
+    <nav>
+        <a>
+            <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="40" class="statusmessage" readonly></textarea>
+        </a>
+    </nav>
+    <div class="mybox-4">
+        <li>
+            <h6>Enhanced Mode</h6>
+        </li>
+        <li>
+            <a>
+                <form id="displaytime"><input type="submit" value="Display Time"  class="btn"></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <textarea  id="atc_n" rows="1" cols="3" maxlength="255">32</textarea>   
+                <textarea  id="atc_m" rows="1" cols="3" maxlength="255">32</textarea>       
+                <form id="attentioncode"><input type="submit" value="Attenetion Code?"  class="btn"></form>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-4">
+        <li>
+            <h6>String function</h6>
+        </li>
+        <li>
+            <a>
+                <form id="upperline">
+                    <textarea name="message" id="txt_line1" rows="1" cols="19" maxlength="20">Line1</textarea>   
+                    <button type="submit" class="btn">Upper Line</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="bottomline">
+                    <textarea name="message" id="txt_line2" rows="1" cols="19" maxlength="20">Line2</textarea>
+                    <button type="submit" class="btn">Bottom Line</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="upscrollcnt">
+                    <textarea name="message" id="txt_cnt" rows="1" cols="19" maxlength="40">Line scroll Continue</textarea>
+                    <button type="submit" class="btn">Scroll Line Continue</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="scrolloncepass">
+                    <textarea name="message" id="txt_once" rows="2" cols="19" maxlength="40">Line Scroll once pass</textarea>
+                    <button type="submit" class="btn">Scroll Line OncePass</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="twoline">
+                    <textarea name="message" id="two_line" rows="2" cols="20" maxlength="40">Two Line Display----1234567890abcdefghih</textarea>
+                    <button type="submit" class="btn">Two Line Display</button>
+                </form>
+            </a>
+        </li>
+    </div>
+    <footer>Copyright &copy; http://www.winpos.com.tw</footer>
+<script>
+    var reader;
+    var output = "";
+
+    $(function() {
+        var rcvToken;
+        var uuid;
+        var cs_status = 0;
+        var reverse_status = '0';
+        var socket = io.connect();
+        socket.emit('NewClient');
+        //-------------------------------------
+        $('#upperline').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("txt_line1").value;
+            socket.emit('AEDEX_', {
+                id: uuid,
+                cmd: 'LINE1',
+                parm: val
+            });
+        });
+        $('#bottomline').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("txt_line2").value;
+            socket.emit('AEDEX_', {
+                id: uuid,
+                cmd: 'LINE2',
+                parm: val
+            });
+        });
+        $('#upscrollcnt').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("txt_cnt").value;
+            socket.emit('AEDEX_', {
+                id: uuid,
+                cmd: 'SCROLL_CONTINUE',
+                parm: val
+            });
+        });
+        $('#scrolloncepass').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("txt_once").value;
+            socket.emit('AEDEX_', {
+                id: uuid,
+                cmd: 'SCROLL_ONCEPASS',
+                parm: val
+            });
+        });
+        $('#twoline').submit(function(e) {
+            e.preventDefault();
+            var val = document.getElementById("two_line").value;
+            socket.emit('AEDEX_', {
+                id: uuid,
+                cmd: 'TWO_LINE',
+                parm: val
+            });
+        });
+        $('#displaytime').submit(function(e) {
+            e.preventDefault();
+            var currentdate = new Date();
+            var hr = currentdate.getHours().toString();
+            var minute = currentdate.getMinutes().toString();
+            var nowtime = hr + ":" + minute;
+            socket.emit('AEDEX_', {
+                id: socket.id,
+                cmd:'DISPLAY_TIME',
+                parm: nowtime,
+            });
+        });
+        $('#attentioncode').submit(function(e) {
+            e.preventDefault();
+            var n = document.getElementById("atc_n").value;
+            var m = document.getElementById("atc_m").value;
+            socket.emit('AEDEX_', {
+                id: uuid,
+                cmd: 'ATTENTION_CODE',
+                p1: n,
+                p2: m,
+            });
+        });
+    
+        //--------------------------------------- 
+        socket.on('done', function(data) {
+            $('#ID_Prnstatus').val(data);
+        });
+        socket.on('LoginSuccess', function(data) {
+            rcvToken = data.token;
+            $('#ID_Prnstatus').val('Login : ' + data.id);
+        });
+        socket.on('regist_client', function(data) {
+            uuid = data;
+        });
+        socket.on('haveToken', function(data) {
+            rcvToken = data;
+        });
+    });
+ 
+</script>
+</body>
+</html>

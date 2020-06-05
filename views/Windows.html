@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ESC/POS Widows Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <script defer src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/styles.css">
+    <script src="./lib/Windows_fn.js"></script>
+</head>
+<body>
+    <header>ESC/POS Windows demo
+        <input id="version_id" class="verbox" readonly>
+        <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">format_list_numbered_rtl</i>
+        </button>
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/")>HOME</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/ESCPOS")>ESCPOS</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/CD5220")>CD5220</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/POS7300")>POS7300</a><br><br>
+            <!--a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Windows")>Window</a><br><br-->
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/WPFontloader")>PRINTER</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Tools")>Tools</a>
+        </ul>
+        <input id="mem_id" class="membox" readonly>
+    </header>
+    <nav>
+        <a>
+            <input id="time_id" class="timebox" readonly>
+            <input id="user_id" class="userbox" placeholder="Login User" readonly> 
+            <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="40" class="statusmessage" readonly></textarea>
+        </a>  
+    </nav>
+    <div id="id01" class="modal">
+        <form class="modal-content animate" name="login">
+            <div class="imgcontainer">
+                <span onclick="document.getElementById('id01').style.display='none'" class="close">
+                    <i class="material-icons">cancel</i>
+                </span>
+            </div>
+            <div class="logincontainer">
+                <div>
+                    <i class="material-icons">group</i>
+                    <input type="text" placeholder="Enter User Name" id="uname" required>
+                </div>
+                <div>
+                    <i class="material-icons">fingerprint</i>
+                    <input type="password" placeholder="Enter Password" id="psw" required>
+                </div>
+                <input id="chkuser" class="btn" type="submit" value="Login">
+            </div>
+        </form>
+    </div>
+   
+    <script>
+        // Get the modal
+        var modal = document.getElementById('id01');
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {   
+            if (event.target == modal) {       
+                modal.style.display = "none";   
+            }
+        }
+    </script>
+    <div class="mybox-5">
+        <li>
+            <h5>Quick Setting:</h5>
+        </li>
+        <li>
+            <a>
+            <input id="initial" type="submit" value="Initial Display" class="btn">
+            <input id="clear" type="submit" value="Clear Display" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <!--input class="Filecontainer" type="file" id="window_file" onchange="readFile(this)">
+            <input id="windowfile" type="submit" class="btn" value = "Read Window Range File"-->
+            <h6>Select Define file</h6>
+            <input id="windowfile" type="file" class="btn" accept=".def" />
+            <textarea id="previewtxt" rows="20"></textarea>
+            </a>
+        </li>  
+         
+    </div>
+    <div class="mybox-5">
+        <li>
+            <h5>Windows 1 Setting</h5>
+        </li>
+        <li>
+            <a>
+                <lable>Range</lable><br>
+                X:<input type="number" class="wrange" value="0" min="0" max="255" id="x1">
+                Size<input type="number" class="wrange" value="64" min="1" max="255" id="x1_size"><br>
+                Y:<input type="number" class="wrange" value="0" min="0" max="63" id="y1">
+                Size:<input type="number" class="wrange" value="32" min="1" max="63" id="y1_size"><br>
+            </a>
+        </li>
+        <li>
+            <h6>Display Mode</h6>
+            <form name="Win1">
+            <div align="left"><input type="radio" name="mode_1" value="NOCHANGE" checked>NOCHANGE</div>
+            <div align="left"><input type="radio" name="mode_1" value="GRAPHIC">GRAPHIC</div>
+            <div align="left"><input type="radio" name="mode_1" value="32X4">32X4</div>
+            <div align="left"><input type="radio" name="mode_1" value="42X8">42X8</div>
+            <div align="left"><input type="radio" name="mode_1" value="32X3">32X3</div>
+            <div align="left"><input type="radio" name="mode_1" value="32X2">32X2</div>
+            <div align="left"><input type="radio" name="mode_1" value="20X2">20X2</div>
+            </form>
+        </li>
+        <li>
+            <a>
+            <h6>Background</h6>
+            <form name="Tran1">
+            <div align="left"><input type="radio" name="bkg_1" value="0" checked>Transparnt</div>
+            <div align="left"><input type="radio" name="bkg_1" value="1" >Non Transpanent</div>
+            </form>    
+            </a>
+        </li>
+        <li>
+            <a>
+            <input id="defwin1" type="submit" value="Define" class="btn">
+            </a>
+        </li>
+        <!--li>
+            <a>
+            <input id="setwin1" type="submit" value="Set Mode" class="btn" disabled>
+            </a>
+        </li--> 
+        <li>
+            <a>
+            <input id="selwin1" type="submit" value="Select Window" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <textarea id="text1" rows="2" cols="20"  maxlength="40" ></textarea>
+            <button id="str1" type="submit" class="btn">Show String</button><br>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-5">
+        <li>
+            <h5>Windows 2 Setting</h5>
+        </li>
+        <li>
+            <a>
+                <lable>Range</lable><br>
+                X:<input type="number" class="wrange" value="12" min="0" max="255" id="x2">
+                Size:<input type="number" class="wrange" value="31" min="1" max="255" id="x2_size"><br>
+                Y:<input type="number" class="wrange" value="1" min="0" max="63" id="y2">
+                Size:<input type="number" class="wrange" value="6" min="1" max="63" id="y2_size"><br>
+            </a>
+        </li>
+        <li>
+            <h6>Display Mode</h6>
+            <form name="Win2"> 
+            <div align="left"><input type="radio" name="mode_2" value="NOCHANGE" checked>NOCHANGE</div>
+            <div align="left"><input type="radio" name="mode_2" value="GRAPHIC">GRAPHIC</div>
+            <div align="left"><input type="radio" name="mode_2" value="32X4">32X4</div>
+            <div align="left"><input type="radio" name="mode_2" value="42X8">42X8</div>
+            <div align="left"><input type="radio" name="mode_2" value="32X3">32X3</div>
+            <div align="left"><input type="radio" name="mode_2" value="32X2">32X2</div>
+            <div align="left"><input type="radio" name="mode_2" value="20X2">20X2</div>
+            </form>
+        </li>
+        <li>
+            <a>
+            <h6>Background</h6>
+            <form name="Tran2">
+            <div align="left"><input type="radio" name="bkg_2" value="0" >Transparnt</div>
+            <div align="left"><input type="radio" name="bkg_2" value="1" checked>Non Transpanent</div>
+            </form></a>
+        </li>
+        <li>
+            <a>
+            <input id="defwin2" type="submit" value="Define" class="btn">
+            </a>
+        </li>
+        <!--li>
+            <a>
+            <input id="setwin2" type="submit" value="Set Mode" class="btn" disabled>
+            </a>
+        </li--> 
+        <li>
+            <a>
+            <input id="selwin2" type="submit" value="Select Window" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <textarea id="text2" rows="2" cols="20"  maxlength="40" ></textarea>
+            <button id="str2" type="submit" class="btn">Show String</button>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-5">
+        <li>
+            <h5>Windows 3 Setting</h5>
+        </li>
+        <li>
+            <a>
+                <lable>Range</lable><br>
+                X:<input type="number" class="wrange" value="9" min="0" max="255" id="x3">
+                Size:<input type="number" class="wrange" value="24" min="1" max="255" id="x3_size"><br>
+                Y:<input type="number" class="wrange" value="4" min="0" max="63" id="y3">
+                Size:<input type="number" class="wrange" value="1" min="1" max="63" id="y3_size"><br>
+            </a>
+        </li>
+        <li>
+            <h6>Display Mode</h6>
+            <form name="Win3"> 
+                <div align="left"><input type="radio" name="mode_3" value="NOCHANGE" checked>NOCHANGE</div>
+                <div align="left"><input type="radio" name="mode_3" value="GRAPHIC" >GRAPHIC</div>
+                <div align="left"><input type="radio" name="mode_3" value="32X4">32X4</div>
+                <div align="left"><input type="radio" name="mode_3" value="42X8">42X8</div>
+                <div align="left"><input type="radio" name="mode_3" value="32X3">32X3</div>
+                <div align="left"><input type="radio" name="mode_3" value="32X2">32X2</div>
+                <div align="left"><input type="radio" name="mode_3" value="20X2">20X2</div>
+            </fome>
+        </li>
+        <li>
+            <a>
+            <h6>Background</h6>
+            <form name="Tran3">
+            <div align="left"><input type="radio" name="bkg_3" value="0" >Transparnt</input></div>
+            <div align="left"><input type="radio" name="bkg_3" value="1" checked>Non Transpanent</input></div>
+            </form>
+        </a>
+        </li>
+        <li>
+            <a>
+            <input id="defwin3" type="submit" value="Define" class="btn">
+            </a>
+        </li>
+        <!--li>
+            <a>
+            <input id="setwin3" type="submit" value="Set Mode" class="btn" disabled>
+            </a>
+        </li--> 
+        <li>
+            <a>
+            <input id="selwin3" type="submit" value="Select window" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <textarea id="text3" rows="2" cols="20"  maxlength="40" ></textarea>
+            <button id="str3" type="submit" class="btn">Show String</button>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-5">
+        <li>
+            <h5>Windows 4 Setting</h5>
+        </li>
+        <li>
+            <a>
+                <lable>Range</lable><br>
+                X:<input type="number" class="wrange" value="9" min="0" max="255" id="x4">
+                Size:<input type="number" class="wrange" value="24" min="1" max="255" id="x4_size"><br>
+                Y:<input type="number" class="wrange" value="4" min="0" max="63" id="y4">
+                Size:<input type="number" class="wrange" value="1" min="1" max="63" id="y4_size"><br>
+            </a>
+        </li>
+        <li>
+            <h6>Display Mode</h6>
+            <form name="Win4"> 
+                <div align="left"><input type="radio" name="mode_4" value="NOCHANGE" checked>NOCHANGE</div>
+                <div align="left"><input type="radio" name="mode_4" value="GRAPHIC" >GRAPHIC</div>
+                <div align="left"><input type="radio" name="mode_4" value="32X4">32X4</div>
+                <div align="left"><input type="radio" name="mode_4" value="42X8">42X8</div>
+                <div align="left"><input type="radio" name="mode_4" value="32X3">32X3</div>
+                <div align="left"><input type="radio" name="mode_4" value="32X2">32X2</div>
+                <div align="left"><input type="radio" name="mode_4" value="20X2">20X2</div>
+            </fome>
+        </li>
+        <li>
+            <a>
+            <h6>Background</h6>
+            <form name="Tran4">
+            <div align="left"><input type="radio" name="bkg_4" value="0" >Transparnt</input></div>
+            <div align="left"><input type="radio" name="bkg_4" value="1" checked>Non Transpanent</input></div>
+            </form>
+        </a>
+        </li>
+        <li>
+            <a>
+            <input id="defwin4" type="submit" value="Define" class="btn">
+            </a>
+        </li>
+        <!--li>
+            <a>
+            <input id="setwin4" type="submit" value="Set Mode" class="btn" disabled>
+            </a>
+        </li--> 
+        <li>
+            <a>
+            <input id="selwin4" type="submit" value="Select window" class="btn">
+            </a>
+        </li>
+        <li>
+            <a>
+            <textarea id="text4" rows="2" cols="20"  maxlength="40" ></textarea>
+            <button id="str4" type="submit" class="btn">Show String</button>
+            </a>
+        </li>
+    </div>
+    <footer>Copyright &copy; http://www.winpos.com.tw</footer>
+<script>
+    window.onload = load();
+</script>
+</body>
+</html>

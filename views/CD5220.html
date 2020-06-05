@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CD5220 command Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./lib/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="./lib/icon.css">
+    <link rel="stylesheet" href="./lib/styles.css">
+    <script defer src="./lib/material.min.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/CD5220_fn.js"></script>
+</head>
+
+<body>
+    <header>CD5220 Command
+        <input id="version_id" class="verbox" readonly>
+        <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">format_list_numbered_rtl</i>
+        </button>
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/")>HOME</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href= "javascript:" onclick=new_url("/ESCPOS")>ESCPOS</a><br><br>
+            <!--a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/CD5220")>CD5220</a><br><br-->
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/POS7300")>POS7300</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Windows")>Window</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/WPFontloader")>PRINTER</a><br><br>
+            <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" href="javascript:" onclick=new_url("/Tools")>Tools</a>
+        </ul>
+        <input id="mem_id" class="membox" readonly> 
+    </header>
+    <nav>
+        <a>
+            <input id="time_id" class="timebox" readonly>
+            <input id="user_id" class="userbox" placeholder="Login User" readonly> 
+            <textarea type="text" placeholder="status" id="ID_Prnstatus" rows="1" cols="40" class="statusmessage" readonly></textarea>
+        </a>
+    </nav>
+    
+    <div class="mybox-4">
+        <li>
+            <h6>Show String:</h6>
+        </li>
+        <li>
+            <a>
+                <form id="inputstr1">
+                    <textarea name="message" id="txt_line1" rows="1" cols="19" maxlength="20">Line1</textarea>   
+                    <button type="submit" class="btn">Write String to Line 1</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="inputstr2">
+                    <textarea name="message" id="txt_line2" rows="1" cols="19" maxlength="20">Line2</textarea>
+                    <button type="submit" class="btn">Write String to Line 2</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="line1scroll">
+                    <textarea name="message" id="txt_full" rows="1" cols="19" maxlength="20">Line1 scroll</textarea>
+                    <button type="submit" class="btn">Line1 Scroll</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="insrting">
+                    <textarea name="message" id="in_txt" rows="2" cols="19" maxlength="40">Nodejs Line Display Demo</textarea>
+                    <button type="submit" class="btn">Write String</button>
+                </form>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-4">
+        <li>
+            <h6>Display Setting</h6>
+        </li>
+        <li>
+            <a>
+                <form id="initial"> <input type="submit" value="Initial Display" class="btn"> </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="clear"> <input type="submit" value="Clear Display" id="bt_clear" class="btn"> </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="clear_cs_line"><button type="submit" class="btn">Clear cursor line</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <input type="range" value="4" min="1" max="4" id="britnesss_val" oninput="bright_txt.value = britnesss_val.value">
+                <output id="bright_txt">4</output><br>
+                <button id="brightness" type="submit" class="btn">Brigtness Adj</button>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_overwrite"><button type="submit" class="btn">Set Overwrite Mode</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_Vscroll"><button type="submit" class="btn">Set Vertical Scroll</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_Hscroll"><button type="submit" class="btn">Set Horizontal Scroll</button></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <select id="device_val">
+                    <option value="0" selected>Printer&Display cancled</option>
+                    <option value="1" selected>Printer selected</option>
+                    <option value="2">Display selected</option>
+                    <option value="3">Printer&Display selected</option>
+                </select>
+                <button id="seldevice" type="submit" class="btn">Peripheral Device</button>
+            </a>
+        </li>
+    </div>
+    <div class="mybox-4">
+        <li>
+            <h6>Cursor Move</h6>
+        </li>
+        <li>
+            <a>
+                <form id="cs_onoff"><input type="submit" value="Cursor ON" id="btcs_on" class="btn"></form>
+            </a>
+        </li>
+        <li>
+            <a>
+                X:<input type="range" name="message" value="1" min="1" max="20" id="pos_x" oninput="x_val.value = pos_x.value">
+                <output id="x_val">1</output><br>
+                Y:<input type="range" name="message" value="1" min="1" max="2" id="pos_y" oninput="y_val.value = pos_y.value">
+                <output id="y_val">1</output><br>
+                <form id="cs_mvXY"> <button type="submit" class="btn">Move Cursor to XY:</button></form>
+            </a>
+        </li>
+        <div class="mbtn-group" style="width:100%">
+            <form id="cs_mvLM"><button style="width:33.3%"><i class="material-icons">skip_previous</i></button></form>
+            <form id="cs_mvU"><button style="width:33.3%"><i class="material-icons">keyboard_arrow_up</i></button></form>
+            <form id="cs_mvRM"><button style="width:33.3%"><i class="material-icons">skip_next</i></button> </form>
+        </div>
+        <div class="mbtn-group " style="width:100% ">
+            <form id="cs_mvL"><button style="width:50%"><i class="material-icons">keyboard_arrow_left</i></button></form>
+            <form id="cs_mvR"><button style="width:50%"><i class="material-icons">keyboard_arrow_right</i></button> </form>
+        </div>
+        <div class="mbtn-group " style="width:100% ">
+            <form id="cs_mvH"><button style="width:33.3%"><i class="material-icons">home</i></button></form>
+            <form id="cs_mvD"><button style="width:33.3%"><i class="material-icons">keyboard_arrow_down</i></button></form>
+            <form id="cs_mvB"><button style="width:33.3%"><i class="material-icons">keyboard_tab</i></button> </form>
+        </div>
+
+    </div>
+    <div class="mybox-4">
+        <li>
+            <h6>Advance Setting</h6>
+        </li>
+        <li>
+            <a>
+                <form id="st_charset">
+                    <select name="cahrset_id" id="charset_val">
+                        <option value="A" selected>U.S.A</option>
+                        <option value="G">Germany</option>
+                        <option value="I">Italy</option>
+                        <option value="J">Japan</option>
+                        <option value="U">UK</option>
+                        <option value="F">France</option>
+                        <option value="S">Spain</option>
+                        <option value="N">Norway</option>
+                        <option value="W">Sweden</option>
+                        <option value="D">Denmark I</option>
+                        <option value="E">Danmark II</option>
+                        <option value="L">Slavonic</option>
+                        <option value="R">Russia</option>
+                    </select>
+                    <button type="submit" class="btn">International char set</button>
+                </form>
+            </a>
+        </li>
+        <li>
+            <a>
+                <form id="st_codetable">
+                    <select name="codetable_id" id="codetable_val">
+                        <option value=0 selected>CP_437</option>
+                        <option value=1>Katakana</option>
+                        <option value=2>CP-850(Multilingual)</option>
+                        <option value=3>CP-860(Portugese)</option>
+                        <option value=4>CP-863(Canadian-French)</option>
+                        <option value=5>CP-865(Nordic)</option>
+                        <option value=6>Slawie</option>
+                        <option value=7>Russia</option>
+                        <option value=11>CP-851(Greek)</option>
+                        <option value=12>CP-853(Turkish)</option>
+                        <option value=13>CP-857(Turkish)</option>
+                        <option value=14>CP-737(Greek)</option>
+                        <option value=15>ISO8859-7(Greek)</option>
+                        <option value=16>WPC-1252(Latin1)</option>
+                        <option value=17>CP866(Cyrillic,Russian)</option>
+                        <option value=18>CP-852(Slavonic)</option>
+                        <option value=19>CP-858(Multilingual)</option>
+                        <option value=20>KU42(Thai)</option>
+                        <option value=21>TIS11(Thai)</option>
+                        <option value=22>TIS13(Thai)</option>
+                        <option value=23>TIS14(Thai)</option>
+                        <option value=24>TIS16(Thai)</option>
+                        <option value=25>TIS17(Thai)</option>
+                        <option value=26>TIS18(Thai)</option>
+                        <option value=30>TCVN3-1(Vietnamese)</option>
+                        <option value=31>TCVN3-2(Vietnamese)</option>
+                        <option value=32>CP-720(Arabic)</option>
+                        <option value=33>CP-775(Baltic)</option>
+                        <option value=34>CP-855(Cyrillic)</option>
+                        <option value=35>CP-861(Iceland)</option>
+                        <option value=36>CP-862(Hebrew)</option>
+                        <option value=37>CP-864(Arabic)</option>
+                        <option value=38>CP-869(Greek)</option>
+                        <option value=39>ISO8859-2(Central European)</option>
+                        <option value=40>ISO8859-15(Latin9)</option>
+                        <option value=41>CP-1098(Farsi)</option>
+                        <option value=42>CP-1118(Lithuanian)</option>
+                        <option value=43>CP-1119(Lithuanian)</option>
+                        <option value=44>CP-1125(Ukrainian)</option>
+                        <option value=45>WCP-1250(Central European)</option>
+                        <option value=46>WCP-1251(Cyrillic,Russian)</option>
+                        <option value=47>WCP-1253(Greek)</option>
+                        <option value=48>WCP-1254(Turkish)</option>
+                        <option value=49>WCP-1255(Hebrew)</option>
+                        <option value=50>WCP-1256(Arabic)</option>
+                        <option value=51>WCP-1257(Baltic)</option>
+                        <option value=52>WCP-1258(Vietnamese)</option>
+                        <option value=53>KZ1048(Kazakhstan)</option>
+                         
+                    </select>
+                    <button type="submit" class="btn">Set code table</button>
+                </form>
+                <form id="cpr1"><button type="submit" class="btn">80h~90h</button></form>
+                <form id="cpr2"><button type="submit" class="btn">A0h~B0h</button></form>
+                <form id="cpr3"><button type="submit" class="btn">C0h~D0h</button></form>
+                <form id="cpr4"><button type="submit" class="btn">E0h~F0h</button></form>
+            </a>
+        </li>
+    </div>
+    <footer>Copyright &copy; http://www.winpos.com.tw</footer>
+
+<script>
+    window.onload = webstart();
+    // $('#initial').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd :'INITIAL',
+
+    //         });
+    //     });
+    // $('#clear').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd:'CLEAR',
+    //         });
+    //     });
+    // $('#clear_cs_line').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd : 'CLR_CS_LINE'
+    //         });
+    //     });
+    // $('#brightness').submit(function(e) {
+    //         e.preventDefault();
+    //         var val = document.getElementById("britnesss_val").value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd :'BRIGHTNESS',
+    //             parm: val
+    //         });
+    //     });
+    // $('#st_overwrite').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd : 'OVERWRITE'
+    //         });
+    //     });
+    // $('#st_Vscroll').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd : 'VSCROLL'
+    //         });
+    //     });
+    // $('#st_Hscroll').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd : 'HSCROLL'
+    //         });
+    //     });
+    // $('#cs_onoff').submit(function(e) {
+    //         e.preventDefault();
+    //         if (cs_status == 0) {
+    //             cs_status = 1;
+    //             document.getElementById("btcs_on").value = "Cursor OFF";
+    //             document.getElementById("btcs_on").style.background = '#700000';
+    //         } else {
+    //             cs_status = 0;
+    //             document.getElementById("btcs_on").value = "Cursor ON";
+    //             document.getElementById("btcs_on").style.background = '#308000';
+    //         }
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'CS_ONOFF',
+    //             parm: cs_status
+    //         });
+    //     });
+    // $('#cs_mvXY').submit(function(e) {
+    //         e.preventDefault();
+    //         var x_val = document.getElementById("pos_x").value;
+    //         var y_val = document.getElementById("pos_y").value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_XY',
+    //             X: x_val,
+    //             Y: y_val
+    //         });
+    //     });
+    // $('#cs_mvR').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_R',
+    //         });
+    //     });
+    // $('#cs_mvL').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_L',
+    //         });
+    //     });        
+    // $('#cs_mvU').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_U',
+    //         });
+    //     });
+    // $('#cs_mvD').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_D',
+    //         });
+    //     });
+    // $('#cs_mvLM').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_LM',
+    //         });
+    //     });
+    // $('#cs_mvRM').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_RM',
+    //         });
+    //     });
+    // $('#cs_mvH').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_H',
+    //         });
+    //     });
+    // $('#cs_mvB').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'MV_CS_B',
+    //         });
+    //     });
+    // $('#st_charset').submit(function(e) {
+    //         e.preventDefault();
+    //         var el = document.getElementById("charset_val");
+    //         var cs = el.options[el.selectedIndex].value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'CHARSET',
+    //             parm: cs
+    //         });
+    //     });    
+    // $('#st_codetable').submit(function(e) {
+    //         e.preventDefault();
+    //         var el = document.getElementById("codetable_val");
+    //         var cs = el.options[el.selectedIndex].value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'CODETABLE',
+    //             parm: cs
+    //         });
+    //     });
+    // $('#cpr1').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'SHOW_CP',
+    //             parm: "P1"
+    //         });
+    //     });
+    // $('#cpr2').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'SHOW_CP',
+    //             parm: "P2"
+    //         });
+    //     });
+    // $('#cpr3').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'SHOW_CP',
+    //             parm: "P3"
+    //         });
+    //     });
+    // $('#cpr4').submit(function(e) {
+    //         e.preventDefault();
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'SHOW_CP',
+    //             parm: "P4"
+    //         });
+    //     });
+    // $('#inputstr1').submit(function(e) {
+    //         e.preventDefault();
+    //         var val = document.getElementById("txt_line1").value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'WRITE_LINE1',
+    //             parm: val
+    //         });
+    //     });
+    // $('#inputstr2').submit(function(e) {
+    //         e.preventDefault();
+    //         var val = document.getElementById("txt_line2").value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'WRITE_LINE2',
+    //             parm: val
+    //         });
+    //     });
+    // $('#line1scroll').submit(function(e) {
+    //         e.preventDefault();
+    //         var val = document.getElementById("txt_full").value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'LINE1_SCROLL',
+    //             parm: val
+    //         });
+    //     });
+    // $('#insrting').submit(function(e) {
+    //         e.preventDefault();
+    //         var val = document.getElementById("in_txt").value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: uuid,
+    //             cmd: 'INPUT_STRING',
+    //             parm: val
+    //         });
+    //     });
+    // $('#seldevice').submit(function(e) {
+    //         e.preventDefault();
+    //         var el = document.getElementById("device_val");
+    //         var cs = el.options[el.selectedIndex].value;
+    //         socket.emit('CD5220_CMD', {
+    //             id: socket.id,
+    //             cmd: 'PERIPHERAL_DEVICE',
+    //             parm: cs
+    //         });
+    //     });     
+     
+    // $('#dnload_char').submit(function(e) {
+    //     e.preventDefault();
+    //     var cs = document.getElementById("dnload_val").value;
+    //     socket.emit('SET_DOWNLOAD_CHAR', {
+    //         id: uuid,
+    //         token: rcvToken,
+    //         parm: cs
+    //     });
+    // });
+    // $('#del_char').submit(function(e) {
+    //     e.preventDefault();
+    //     var cs = document.getElementById("del_val").value;
+    //     socket.emit('DELETE_DOWNLOAD_CHAR', {
+    //         id: uuid,
+    //         token: rcvToken,
+    //         parm: cs
+    //     });
+    // });
+     
+    //--------------------------------------- 
+    // socket.on('done', function(data) {
+    //         $('#ID_Prnstatus').val(data);
+    //     });
+    // socket.on('LoginSuccess', function(data) {
+    //         rcvToken = data.token;
+    //         $('#ID_Prnstatus').val('Login : ' + data.id);
+    //     });
+    // socket.on('regist_client', function(data) {
+    //         uuid = data;
+    //     });
+    // socket.on('haveToken', function(data) {
+    //         rcvToken = data;
+    //     });
+
+</script>
+</body>
+</html>
